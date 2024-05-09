@@ -1,5 +1,5 @@
 surgery,age,hospital_number,rectal_temp,pulse,respiratory_rate,temp_of_extremities,peripheral_pulse,mucous_membrane,capillary_refill_time,pain,peristalsis,abdominal_distention,nasogastric_tube,nasogastric_reflux,nasogastric_reflux_ph,rectal_exam_feces,abdomen,packed_cell_volume,total_protein,abdomo_appearance,abdomo_protein,outcome,surgical_lesion,lesion_1,lesion_2,lesion_3,cp_data
-no,adult,530101,38.5,66,28,cool,reduced,NA,more_3_sec,extreme_pain,absent,severe,,,,decreased,distend_large,45,8.4,,,died,no,11300,0,0,no
+no,adult,530101,38.5,66,28,cool,reduced,,more_3_sec,extreme_pain,absent,severe,,,,decreased,distend_large,45,8.4,,,died,no,11300,0,0,no
 yes,adult,534817,39.2,88,20,,,pale_cyanotic,less_3_sec,mild_pain,absent,slight,,,,absent,other,50,85,cloudy,2,euthanized,no,2208,0,0,no
 no,adult,530334,38.3,40,24,normal,normal,pale_pink,less_3_sec,mild_pain,hypomotile,none,,,,normal,normal,33,6.7,,,lived,no,0,0,0,yes
 yes,young,5290409,39.1,164,84,cold,normal,dark_cyanotic,more_3_sec,depressed,absent,severe,none,less_1_liter,5,decreased,,48,7.2,serosanguious,5.3,died,yes,2208,0,0,yes
