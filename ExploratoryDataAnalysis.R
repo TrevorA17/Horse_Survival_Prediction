@@ -84,3 +84,57 @@ num_modes <- sapply(horse_data[num_vars], get_mode)
 num_central_tendency <- data.frame(mean = num_means, median = num_medians, mode = num_modes)
 num_central_tendency
 
+library(ggplot2)
+
+# Numerical Variables
+num_vars <- c("rectal_temp", "pulse", "respiratory_rate", 
+              "nasogastric_reflux_ph", "packed_cell_volume", "total_protein", 
+              "lesion_1", "lesion_2", "lesion_3")
+
+# Create histograms for numerical variables
+histograms <- lapply(num_vars, function(var) {
+  ggplot(horse_data, aes_string(x = var)) +
+    geom_histogram(fill = "skyblue", color = "black", bins = 20) +
+    labs(title = paste("Histogram of", var), x = var, y = "Frequency") +
+    theme_minimal()
+})
+
+# Create boxplots for numerical variables
+boxplots <- lapply(num_vars, function(var) {
+  ggplot(horse_data, aes_string(y = var)) +
+    geom_boxplot(fill = "lightgreen", color = "black") +
+    labs(title = paste("Boxplot of", var), y = var) +
+    theme_minimal()
+})
+
+# Print histograms and boxplots
+print(histograms[[1]])  # Print first histogram
+print(boxplots[[1]])     # Print first boxplot
+
+# Measures of Relationship
+
+# Correlation analysis for numerical variables
+num_vars <- c("rectal_temp", "pulse", "respiratory_rate", 
+              "nasogastric_reflux_ph", "packed_cell_volume", "total_protein", 
+              "lesion_1", "lesion_2", "lesion_3")
+
+# Compute correlation matrix
+num_correlation <- cor(horse_data[num_vars], use = "complete.obs")
+
+# Print correlation matrix
+num_correlation
+
+# Contingency tables for categorical variables
+cat_vars <- c("surgery", "age", "temp_of_extremities", "peripheral_pulse", 
+              "mucous_membrane", "capillary_refill_time", "pain", 
+              "peristalsis", "abdominal_distention", "nasogastric_tube", 
+              "nasogastric_reflux", "rectal_exam_feces", "abdomen", 
+              "abdomo_appearance", "abdomo_protein", "outcome", 
+              "surgical_lesion", "cp_data")
+
+# Compute contingency tables
+cat_contingency_tables <- lapply(horse_data[cat_vars], table)
+
+# Print contingency tables
+cat_contingency_tables
+
