@@ -62,3 +62,25 @@ num_freq_summary <- lapply(horse_data[num_vars], summary)
 cat_freq_summary
 num_freq_summary
 
+# Measures of Central Tendency for Numerical Variables
+num_vars <- c("rectal_temp", "pulse", "respiratory_rate", 
+              "nasogastric_reflux_ph", "packed_cell_volume", "total_protein", 
+              "lesion_1", "lesion_2", "lesion_3")
+
+# Mean
+num_means <- sapply(horse_data[num_vars], mean, na.rm = TRUE)
+
+# Median
+num_medians <- sapply(horse_data[num_vars], median, na.rm = TRUE)
+
+# Mode (custom function)
+get_mode <- function(x) {
+  uniq_x <- unique(x)
+  uniq_x[which.max(tabulate(match(x, uniq_x)))]
+}
+num_modes <- sapply(horse_data[num_vars], get_mode)
+
+# Print measures of central tendency for numerical variables
+num_central_tendency <- data.frame(mean = num_means, median = num_medians, mode = num_modes)
+num_central_tendency
+
