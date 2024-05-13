@@ -39,32 +39,19 @@ head(horse_data)
 # View the dataset in a separate viewer window
 View(horse_data)
 
-# Summarize missing values for each variable
-missing_values_summary <- sapply(horse_data, function(x) sum(is.na(x) | is.null(x)))
-print("Summary of Missing Values:")
-print(missing_values_summary)
+library(caret)
 
-# Impute missing values 
-# Mean imputation for numerical variables
-for (var in num_vars) {
-  if (sum(is.na(horse_data[[var]])) > 0) {
-    horse_data[[var]][is.na(horse_data[[var]])] <- mean(horse_data[[var]], na.rm = TRUE)
-  }
-}
+# Set the seed for reproducibility
+set.seed(123)
 
-# Mode imputation for categorical variables
-for (var in cat_vars) {
-  if (sum(is.na(horse_data[[var]])) > 0) {
-    mode_val <- names(sort(table(horse_data[[var]], useNA = "always"), decreasing = TRUE)[1])
-    horse_data[[var]][is.na(horse_data[[var]])] <- mode_val
-  }
-}
+# Define the percentage of data to be used for training (e.g., 80%)
+train_percentage <- 0.8
 
-# Verify if missing values are imputed
-missing_values_after_imputation <- colSums(is.na(horse_data))
-print(missing_values_after_imputation)
+# Split the dataset into training and testing sets
+train_index <- createDataPartition(horse_data$outcome, p = train_percentage, list = FALSE)
+train_data <- horse_data[train_index, ]
+test_data <- horse_data[-train_index, ]
 
-# View the imputed dataset
-print(horse_data)  # Print the entire dataset
-
-
+# Print the dimensions of the training and testing sets
+cat("Training set dimensions:", dim(train_data), "\n")
+cat("Testing set dimensions:", dim(test_data), "\n")
