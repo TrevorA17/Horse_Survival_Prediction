@@ -55,3 +55,73 @@ test_data <- horse_data[-train_index, ]
 # Print the dimensions of the training and testing sets
 cat("Training set dimensions:", dim(train_data), "\n")
 cat("Testing set dimensions:", dim(test_data), "\n")
+
+# Set the seed for reproducibility
+set.seed(123)
+
+# Define the number of bootstrap samples
+num_bootstrap_samples <- 1000
+
+# Initialize an empty vector to store bootstrap statistics
+bootstrap_statistics <- numeric(num_bootstrap_samples)
+
+# Perform bootstrapping
+for (i in 1:num_bootstrap_samples) {
+  # Generate a bootstrap sample by sampling with replacement
+  bootstrap_sample <- horse_data[sample(nrow(horse_data), replace = TRUE), ]
+  
+  # Compute the statistic of interest on the bootstrap sample
+  # For example, you can compute the mean of a numerical variable
+  bootstrap_statistics[i] <- mean(bootstrap_sample$rectal_temp, na.rm = TRUE)
+}
+
+# Compute and print the bootstrap estimate (e.g., mean) and its standard error
+bootstrap_estimate <- mean(bootstrap_statistics)
+bootstrap_standard_error <- sd(bootstrap_statistics)
+cat("Bootstrap Estimate:", bootstrap_estimate, "\n")
+cat("Bootstrap Standard Error:", bootstrap_standard_error, "\n")
+
+# Train a logistic regression model for classification
+model <- glm(outcome ~ ., data = horse_data, family = binomial)
+
+# Print the summary of the model
+summary(model)
+
+# Predict outcomes using the logistic regression model
+predictions <- predict(model, newdata = horse_data, type = "response")
+
+# Convert predicted probabilities to binary predictions (0 or 1)
+predicted_classes <- ifelse(predictions > 0.5, 1, 0)
+
+# Create a confusion matrix
+conf_matrix <- table(horse_data$outcome, predicted_classes)
+print("Confusion Matrix:")
+print(conf_matrix)
+
+# Calculate accuracy
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+print(paste("Accuracy:", accuracy))
+
+# Calculate precision
+precision <- conf_matrix[2, 2] / sum(conf_matrix[, 2])
+print(paste("Precision:", precision))
+
+# Calculate recall (sensitivity)
+recall <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+print(paste("Recall (Sensitivity):", recall))
+
+# Calculate specificity
+specificity <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+print(paste("Specificity:", specificity))
+
+# Calculate F1 score
+f1_score <- 2 * (precision * recall) / (precision + recall)
+print(paste("F1 Score:", f1_score))
+
+# Plot ROC curve
+library(pROC)
+roc_curve <- roc(horse_data$outcome, predictions)
+plot(roc_curve, main = "ROC Curve", col = "blue")
+
+
+
