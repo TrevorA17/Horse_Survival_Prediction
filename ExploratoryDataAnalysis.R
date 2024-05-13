@@ -138,3 +138,12 @@ cat_contingency_tables <- lapply(horse_data[cat_vars], table)
 # Print contingency tables
 cat_contingency_tables
 
+# ANOVA (Analysis of Variance)
+
+# Example: ANOVA for the 'age' variable (categorical) and the 'pulse' variable (numerical)
+anova_result <- aov(pulse ~ age, data = horse_data)
+
+# Print ANOVA table
+summary(anova_result)
+
+
