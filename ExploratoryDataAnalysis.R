@@ -203,4 +203,31 @@ cat_barplots <- lapply(cat_vars, function(var) {
 # Print categorical univariate plots
 print(cat_barplots[[1]])  # Print first barplot
 
+library(ggplot2)
+
+# Scatter plots for numerical variables
+scatter_plots <- lapply(num_vars, function(var) {
+  ggplot(horse_data, aes_string(x = var)) +
+    geom_point(aes_string(y = "pulse", color = "surgery"), alpha = 0.5) +
+    labs(title = paste("Scatter Plot of", var, "vs. Pulse"), x = var, y = "Pulse") +
+    theme_minimal()
+})
+
+# Boxplots for numerical variables by categorical variables
+boxplots_by_cat <- lapply(cat_vars, function(cat_var) {
+  lapply(num_vars, function(num_var) {
+    ggplot(horse_data, aes_string(x = cat_var, y = num_var, fill = cat_var)) +
+      geom_boxplot() +
+      labs(title = paste("Boxplot of", num_var, "by", cat_var), x = cat_var, y = num_var) +
+      theme_minimal()
+  })
+})
+
+# Print scatter plots
+print(scatter_plots[[3]])  # Print first scatter plot
+
+# Print boxplots by categorical variables
+print(boxplots_by_cat[[1]][[1]])  # Print first boxplot by the first categorical variable
+
+
 

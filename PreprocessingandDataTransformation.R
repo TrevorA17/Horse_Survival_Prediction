@@ -38,3 +38,28 @@ head(horse_data)
 
 # View the dataset in a separate viewer window
 View(horse_data)
+
+# Summarize missing values for each variable
+missing_values_summary <- sapply(horse_data, function(x) sum(is.na(x) | is.null(x)))
+print("Summary of Missing Values:")
+print(missing_values_summary)
+
+# Impute missing values 
+# Mean imputation for numerical variables
+for (var in num_vars) {
+  if (sum(is.na(horse_data[[var]])) > 0) {
+    horse_data[[var]][is.na(horse_data[[var]])] <- mean(horse_data[[var]], na.rm = TRUE)
+  }
+}
+
+# Mode imputation for categorical variables
+for (var in cat_vars) {
+  if (sum(is.na(horse_data[[var]])) > 0) {
+    mode_val <- names(sort(table(horse_data[[var]], useNA = "always"), decreasing = TRUE)[1])
+    horse_data[[var]][is.na(horse_data[[var]])] <- mode_val
+  }
+}
+
+# Verify if missing values are imputed
+missing_values_after_imputation <- colSums(is.na(horse_data))
+print(missing_values_after_imputation)
