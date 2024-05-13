@@ -131,6 +131,34 @@ rf_model <- randomForest(outcome ~ ., data = horse_data)
 # Print the summary of the random forest model
 print(rf_model)
 
+library(caret)
+
+# Define the control parameters for cross-validation
+ctrl <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+
+# Define the classification models to compare
+models <- c("Logistic Regression" = "glm",
+            "Random Forest" = "rf")
+
+# Check for missing values in the dataset
+missing_values <- colSums(is.na(horse_data))
+print(missing_values)
+
+# Remove rows with missing values
+horse_data <- na.omit(horse_data)
+
+
+# Train and evaluate models using cross-validation
+results <- lapply(models, function(model) {
+  train(outcome ~ ., data = horse_data, method = model, trControl = ctrl)
+})
+
+# Compare model performance
+comparison <- resamples(results)
+
+# Summarize model performance
+summary(comparison)
+
 
 
 
