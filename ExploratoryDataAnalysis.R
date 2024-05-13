@@ -146,4 +146,61 @@ anova_result <- aov(pulse ~ age, data = horse_data)
 # Print ANOVA table
 summary(anova_result)
 
+library(ggplot2)
+
+# Numerical Variables
+num_vars <- c("rectal_temp", "pulse", "respiratory_rate", 
+              "nasogastric_reflux_ph", "packed_cell_volume", "total_protein", 
+              "lesion_1", "lesion_2", "lesion_3")
+
+# Create histograms for numerical variables
+num_histograms <- lapply(num_vars, function(var) {
+  ggplot(horse_data, aes_string(x = var)) +
+    geom_histogram(fill = "skyblue", color = "black", bins = 20) +
+    labs(title = paste("Histogram of", var), x = var, y = "Frequency") +
+    theme_minimal()
+})
+
+# Create density plots for numerical variables
+num_density_plots <- lapply(num_vars, function(var) {
+  ggplot(horse_data, aes_string(x = var)) +
+    geom_density(fill = "skyblue", color = "black") +
+    labs(title = paste("Density Plot of", var), x = var, y = "Density") +
+    theme_minimal()
+})
+
+# Create boxplots for numerical variables
+num_boxplots <- lapply(num_vars, function(var) {
+  ggplot(horse_data, aes_string(y = var)) +
+    geom_boxplot(fill = "lightgreen", color = "black") +
+    labs(title = paste("Boxplot of", var), y = var) +
+    theme_minimal()
+})
+
+# Print numerical univariate plots
+print(num_histograms[[1]])  # Print first histogram
+print(num_density_plots[[1]])  # Print first density plot
+print(num_boxplots[[1]])     # Print first boxplot
+
+
+# Categorical Variables
+cat_vars <- c("surgery", "age", "temp_of_extremities", "peripheral_pulse", 
+              "mucous_membrane", "capillary_refill_time", "pain", 
+              "peristalsis", "abdominal_distention", "nasogastric_tube", 
+              "nasogastric_reflux", "rectal_exam_feces", "abdomen", 
+              "abdomo_appearance", "abdomo_protein", "outcome", 
+              "surgical_lesion", "cp_data")
+
+# Create barplots for categorical variables
+cat_barplots <- lapply(cat_vars, function(var) {
+  ggplot(horse_data, aes_string(x = var)) +
+    geom_bar(fill = "skyblue", color = "black") +
+    labs(title = paste("Barplot of", var), x = var, y = "Count") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+})
+
+# Print categorical univariate plots
+print(cat_barplots[[1]])  # Print first barplot
+
 
