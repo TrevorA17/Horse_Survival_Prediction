@@ -124,4 +124,21 @@ roc_curve <- roc(horse_data$outcome, predictions)
 plot(roc_curve, main = "ROC Curve", col = "blue")
 
 
+# Train a random forest model
+library(randomForest)
+rf_model <- randomForest(outcome ~ ., data = horse_data)
+
+# Print the summary of the random forest model
+print(rf_model)
+
+
+
+
+
+
+
+
+
+
+
 
