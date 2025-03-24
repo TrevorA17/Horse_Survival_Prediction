@@ -1,9 +1,16 @@
-# Save the glm model
-dir.create("./models", showWarnings = FALSE)  # Create the directory if it doesn't exist
-saveRDS(model, file = "./models/glm_model.rds")  # Save the model
+library(randomForest)
 
-# Load the saved model
-loaded_model <- readRDS("./models/glm_model.rds")
+# Train Random Forest model
+rf_model <- randomForest(outcome ~ ., data = horse_data)
+
+# Create directory if it doesn't exist
+dir.create("./models", showWarnings = FALSE)
+
+# Save the RF model
+saveRDS(rf_model, file = "./models/rf_model.rds")
+
+# Load the saved RF model
+loaded_rf_model <- readRDS("./models/rf_model.rds")
 
 # Prepare new data for prediction
 new_data <- data.frame(
@@ -22,7 +29,7 @@ new_data <- data.frame(
   abdominal_distention = "none",
   nasogastric_tube = "none",
   nasogastric_reflux = "none",
-  nasogastric_reflux_ph = 0,  # Fill in with appropriate values
+  nasogastric_reflux_ph = 0,  # Ensure correct value
   rectal_exam_feces = "normal",
   abdomen = "distend_large",
   packed_cell_volume = 45,
@@ -36,8 +43,22 @@ new_data <- data.frame(
   cp_data = "no"
 )
 
-# Use the loaded model to make predictions
-predictions <- predict(loaded_model, newdata = new_data)
+# Ensure categorical variables in new data match training data
+for (col in names(new_data)) {
+  if (col %in% names(horse_data)) {
+    if (is.factor(horse_data[[col]])) {
+      # Convert to factor and match levels with training data
+      new_data[[col]] <- factor(new_data[[col]], levels = levels(horse_data[[col]]))
+    } else if (is.numeric(horse_data[[col]])) {
+      # Convert to numeric if needed
+      new_data[[col]] <- as.numeric(as.character(new_data[[col]]))
+    }
+  }
+}
+
+# Make predictions again
+predictions <- predict(loaded_rf_model, newdata = new_data)
 
 # Print predictions
 print(predictions)
+

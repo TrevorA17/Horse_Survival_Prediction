@@ -137,30 +137,3 @@ rf_model <- randomForest(outcome ~ ., data = horse_data)
 # Print the summary of the random forest model
 print(rf_model)
 
-library(caret)
-library(randomForest)
-
-# Ensure outcome is a factor
-horse_data$outcome <- as.factor(horse_data$outcome)
-
-# Remove missing values
-horse_data <- na.omit(horse_data)
-
-# Convert categorical variables to factors
-horse_data[] <- lapply(horse_data, function(x) if (is.character(x)) as.factor(x) else x)
-
-# Define train control
-ctrl <- trainControl(method = "cv", number = 10)
-
-# Define models as a list
-models <- list("Logistic Regression" = "glm",
-               "Random Forest" = "rf")
-
-# Train models
-results <- lapply(models, function(model) {
-  train(outcome ~ ., data = horse_data, method = model, trControl = ctrl)
-})
-
-# Compare model performance
-comparison <- resamples(results)
-summary(comparison)
