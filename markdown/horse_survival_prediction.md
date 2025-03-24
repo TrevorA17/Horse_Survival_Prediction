@@ -21,6 +21,9 @@ Trevor Okinda
 - [Training Model](#training-model)
   - [Data Splitting](#data-splitting)
   - [Boostrapping](#boostrapping)
+- [Train Models](#train-models)
+  - [Logistic Regression Model](#logistic-regression-model)
+  - [Random Forest Model](#random-forest-model)
 
 # Student Details
 
@@ -2638,3 +2641,269 @@ cat("Bootstrap Standard Error:", bootstrap_standard_error, "\n")
 ```
 
     ## Bootstrap Standard Error: 0.03715346
+
+# Train Models
+
+## Logistic Regression Model
+
+``` r
+# Remove rows with missing values
+horse_data <- na.omit(horse_data)
+
+# Train a logistic regression model for classification
+model <- glm(outcome ~ ., data = horse_data, family = binomial)
+
+# Print the summary of the model
+summary(model)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = outcome ~ ., family = binomial, data = horse_data)
+    ## 
+    ## Coefficients:
+    ##                                   Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)                      1.507e+00  3.526e+01   0.043 0.965900    
+    ## surgeryyes                       8.774e-01  1.938e+00   0.453 0.650677    
+    ## ageyoung                        -4.252e+00  2.892e+00  -1.470 0.141586    
+    ## hospital_number                  5.672e-08  3.450e-07   0.164 0.869403    
+    ## rectal_temp                      3.327e-01  8.973e-01   0.371 0.710819    
+    ## pulse                            4.826e-02  3.218e-02   1.500 0.133606    
+    ## respiratory_rate                -1.830e-02  3.364e-02  -0.544 0.586444    
+    ## temp_of_extremitiescold         -1.037e+00  2.917e+00  -0.356 0.722078    
+    ## temp_of_extremitiescool         -4.423e+00  2.956e+00  -1.496 0.134580    
+    ## temp_of_extremitiesnormal       -7.944e-01  2.820e+00  -0.282 0.778139    
+    ## temp_of_extremitieswarm          2.997e+00  3.130e+00   0.958 0.338261    
+    ## peripheral_pulseabsent           9.955e+00  4.307e+00   2.311 0.020820 *  
+    ## peripheral_pulseincreased        1.967e+00  9.176e+03   0.000 0.999829    
+    ## peripheral_pulsenormal           1.004e+01  3.203e+00   3.135 0.001716 ** 
+    ## peripheral_pulsereduced          7.402e+00  2.811e+00   2.633 0.008461 ** 
+    ## mucous_membranebright_pink       2.504e+00  2.344e+00   1.068 0.285407    
+    ## mucous_membranebright_red       -1.556e+01  5.245e+00  -2.967 0.003012 ** 
+    ## mucous_membranedark_cyanotic    -3.998e+00  2.705e+00  -1.478 0.139355    
+    ## mucous_membranenormal_pink      -4.483e+00  2.464e+00  -1.819 0.068922 .  
+    ## mucous_membranepale_cyanotic     3.055e+00  2.222e+00   1.375 0.169253    
+    ## mucous_membranepale_pink        -3.305e+00  2.114e+00  -1.563 0.118021    
+    ## capillary_refill_time3           9.811e-01  2.641e+03   0.000 0.999704    
+    ## capillary_refill_timeless_3_sec  3.169e+00  1.808e+00   1.752 0.079708 .  
+    ## capillary_refill_timemore_3_sec  1.194e+01  3.894e+00   3.066 0.002170 ** 
+    ## painalert                       -4.222e+00  3.419e+00  -1.235 0.216892    
+    ## paindepressed                   -5.028e+00  2.967e+00  -1.695 0.090170 .  
+    ## painextreme_pain                -1.609e+01  4.979e+00  -3.231 0.001233 ** 
+    ## painmild_pain                   -4.107e+00  2.862e+00  -1.435 0.151186    
+    ## painsevere_pain                 -1.407e+01  4.769e+00  -2.950 0.003174 ** 
+    ## peristalsisabsent               -6.610e+00  3.318e+00  -1.992 0.046332 *  
+    ## peristalsishypermotile           1.837e+00  3.857e+00   0.476 0.633841    
+    ## peristalsishypomotile           -6.543e+00  2.992e+00  -2.187 0.028738 *  
+    ## peristalsisnormal                4.417e+01  6.416e+03   0.007 0.994507    
+    ## abdominal_distentionmoderate     6.304e+00  3.317e+00   1.901 0.057358 .  
+    ## abdominal_distentionnone         7.999e+00  3.914e+00   2.044 0.040984 *  
+    ## abdominal_distentionsevere       1.156e+01  4.116e+00   2.808 0.004985 ** 
+    ## abdominal_distentionslight       7.022e+00  3.387e+00   2.073 0.038160 *  
+    ## nasogastric_tubenone            -3.353e+00  2.340e+00  -1.433 0.151921    
+    ## nasogastric_tubesignificant      2.236e+00  2.081e+00   1.074 0.282729    
+    ## nasogastric_tubeslight           4.812e+00  2.472e+00   1.947 0.051593 .  
+    ## nasogastric_refluxless_1_liter   4.484e+00  2.884e+00   1.555 0.119976    
+    ## nasogastric_refluxmore_1_liter   3.783e+00  2.466e+00   1.534 0.124960    
+    ## nasogastric_refluxnone           5.346e+00  2.664e+00   2.007 0.044761 *  
+    ## nasogastric_reflux_ph           -4.528e-01  7.559e-01  -0.599 0.549201    
+    ## rectal_exam_fecesabsent         -1.848e+00  1.930e+00  -0.958 0.338272    
+    ## rectal_exam_fecesdecreased      -2.597e+00  2.217e+00  -1.171 0.241434    
+    ## rectal_exam_fecesincreased       5.743e+00  4.912e+00   1.169 0.242342    
+    ## rectal_exam_fecesnormal         -2.943e+00  2.151e+00  -1.368 0.171279    
+    ## abdomendistend_large            -1.467e+00  2.140e+00  -0.686 0.493005    
+    ## abdomendistend_small            -4.467e+00  2.266e+00  -1.972 0.048647 *  
+    ## abdomenfirm                      1.968e+01  6.207e+03   0.003 0.997470    
+    ## abdomennormal                   -4.864e+00  3.108e+00  -1.565 0.117604    
+    ## abdomenother                     2.659e+01  4.268e+03   0.006 0.995029    
+    ## packed_cell_volume              -3.789e-01  1.273e-01  -2.976 0.002921 ** 
+    ## total_protein                    2.835e-01  8.197e-02   3.459 0.000542 ***
+    ## abdomo_appearanceclear          -6.779e+00  3.057e+00  -2.218 0.026579 *  
+    ## abdomo_appearancecloudy          9.968e+00  3.781e+00   2.636 0.008391 ** 
+    ## abdomo_appearanceserosanguious  -2.580e+00  1.754e+00  -1.471 0.141212    
+    ## abdomo_protein0.1                2.641e+01  2.923e+04   0.001 0.999279    
+    ## abdomo_protein1                  2.591e+01  3.997e+03   0.006 0.994827    
+    ## abdomo_protein1.3               -1.509e+01  2.988e+04  -0.001 0.999597    
+    ## abdomo_protein1.4               -1.571e+01  2.923e+04  -0.001 0.999571    
+    ## abdomo_protein1.5               -4.638e+01  2.993e+04  -0.002 0.998764    
+    ## abdomo_protein1.6                4.088e+00  1.508e+04   0.000 0.999784    
+    ## abdomo_protein10                -2.235e+01  2.923e+04  -0.001 0.999390    
+    ## abdomo_protein10.1              -2.366e+01  2.923e+04  -0.001 0.999354    
+    ## abdomo_protein2                  1.091e+01  4.466e+00   2.444 0.014543 *  
+    ## abdomo_protein2.1               -1.837e+01  2.923e+04  -0.001 0.999499    
+    ## abdomo_protein2.2                3.809e+01  2.923e+04   0.001 0.998960    
+    ## abdomo_protein2.3               -1.163e+01  1.741e+04  -0.001 0.999467    
+    ## abdomo_protein2.5                2.181e+01  2.923e+04   0.001 0.999405    
+    ## abdomo_protein2.6                2.520e+00  7.886e+00   0.320 0.749303    
+    ## abdomo_protein2.8               -3.313e+01  1.107e+04  -0.003 0.997613    
+    ## abdomo_protein2.9               -4.175e+01  2.923e+04  -0.001 0.998860    
+    ## abdomo_protein3                  2.953e+01  1.758e+04   0.002 0.998659    
+    ## abdomo_protein3.2               -1.170e+01  2.923e+04   0.000 0.999681    
+    ## abdomo_protein3.3                2.303e+01  3.064e+04   0.001 0.999400    
+    ## abdomo_protein3.4                6.756e+00  3.656e+00   1.848 0.064565 .  
+    ## abdomo_protein3.6                2.758e+00  5.794e+02   0.005 0.996203    
+    ## abdomo_protein3.7               -1.517e+01  2.923e+04  -0.001 0.999586    
+    ## abdomo_protein3.9                8.919e-01  2.874e+01   0.031 0.975238    
+    ## abdomo_protein4.1               -1.476e+01  7.922e+03  -0.002 0.998513    
+    ## abdomo_protein4.3                6.510e+00  8.847e+01   0.074 0.941346    
+    ## abdomo_protein4.4                2.375e+00  2.923e+04   0.000 0.999935    
+    ## abdomo_protein4.5               -2.091e+00  4.791e+00  -0.436 0.662505    
+    ## abdomo_protein4.7               -1.896e+01  2.923e+04  -0.001 0.999482    
+    ## abdomo_protein4.8                2.417e+01  2.923e+04   0.001 0.999340    
+    ## abdomo_protein5                  1.064e+01  1.076e+04   0.001 0.999211    
+    ## abdomo_protein5.2                1.313e+01  2.923e+04   0.000 0.999642    
+    ## abdomo_protein5.3               -2.666e+01  4.537e+03  -0.006 0.995311    
+    ## abdomo_protein6                 -2.249e+01  1.658e+04  -0.001 0.998918    
+    ## abdomo_protein6.6                1.622e+01  2.923e+04   0.001 0.999557    
+    ## abdomo_protein7                 -1.318e+01  1.087e+04  -0.001 0.999033    
+    ## abdomo_protein7.4               -5.483e+00  2.988e+04   0.000 0.999854    
+    ## abdomo_protein8                 -9.530e+00  2.954e+04   0.000 0.999743    
+    ## surgical_lesionyes              -4.180e+00  2.478e+00  -1.686 0.091718 .  
+    ## lesion_1                        -4.947e-05  1.031e-04  -0.480 0.631339    
+    ## lesion_2                         1.112e-03  1.405e+00   0.001 0.999369    
+    ## lesion_3                        -7.129e-03  1.350e+01  -0.001 0.999579    
+    ## cp_datayes                       8.782e-01  1.290e+00   0.681 0.496007    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 341.130  on 298  degrees of freedom
+    ## Residual deviance:  81.344  on 199  degrees of freedom
+    ## AIC: 281.34
+    ## 
+    ## Number of Fisher Scoring iterations: 20
+
+``` r
+# Ensure peripheral_pulse has the same factor levels in horse_data as in the model
+horse_data$peripheral_pulse <- factor(horse_data$peripheral_pulse, levels = levels(train_data$peripheral_pulse))
+
+# Predict outcomes using the logistic regression model
+predictions <- predict(model, newdata = horse_data, type = "response")
+
+# Convert predicted probabilities to binary predictions (0 or 1)
+predicted_classes <- ifelse(predictions > 0.5, 1, 0)
+
+# Create a confusion matrix
+conf_matrix <- table(horse_data$outcome, predicted_classes)
+print("Confusion Matrix:")
+```
+
+    ## [1] "Confusion Matrix:"
+
+``` r
+print(conf_matrix)
+```
+
+    ##             predicted_classes
+    ##                0   1
+    ##   died        69   8
+    ##   euthanized   1  43
+    ##   lived        6 172
+
+``` r
+# Calculate accuracy
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+print(paste("Accuracy:", accuracy))
+```
+
+    ## [1] "Accuracy: 0.374581939799331"
+
+``` r
+# Calculate precision
+precision <- conf_matrix[2, 2] / sum(conf_matrix[, 2])
+print(paste("Precision:", precision))
+```
+
+    ## [1] "Precision: 0.192825112107623"
+
+``` r
+# Calculate recall (sensitivity)
+recall <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+print(paste("Recall (Sensitivity):", recall))
+```
+
+    ## [1] "Recall (Sensitivity): 0.977272727272727"
+
+``` r
+# Calculate specificity
+specificity <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+print(paste("Specificity:", specificity))
+```
+
+    ## [1] "Specificity: 0.896103896103896"
+
+``` r
+# Calculate F1 score
+f1_score <- 2 * (precision * recall) / (precision + recall)
+print(paste("F1 Score:", f1_score))
+```
+
+    ## [1] "F1 Score: 0.322097378277154"
+
+``` r
+# Plot ROC curve
+library(pROC)
+```
+
+    ## Type 'citation("pROC")' for a citation.
+
+    ## 
+    ## Attaching package: 'pROC'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     cov, smooth, var
+
+``` r
+roc_curve <- roc(horse_data$outcome, predictions)
+```
+
+    ## Setting levels: control = died, case = euthanized
+
+    ## Setting direction: controls < cases
+
+``` r
+plot(roc_curve, main = "ROC Curve", col = "blue")
+```
+
+![](horse_survival_prediction_files/figure-gfm/Logistic%20Regression%20Model-1.png)<!-- -->
+
+## Random Forest Model
+
+``` r
+# Train a random forest model
+library(randomForest)
+```
+
+    ## randomForest 4.7-1.1
+
+    ## Type rfNews() to see new features/changes/bug fixes.
+
+    ## 
+    ## Attaching package: 'randomForest'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     margin
+
+``` r
+rf_model <- randomForest(outcome ~ ., data = horse_data)
+
+# Print the summary of the random forest model
+print(rf_model)
+```
+
+    ## 
+    ## Call:
+    ##  randomForest(formula = outcome ~ ., data = horse_data) 
+    ##                Type of random forest: classification
+    ##                      Number of trees: 500
+    ## No. of variables tried at each split: 5
+    ## 
+    ##         OOB estimate of  error rate: 28.09%
+    ## Confusion matrix:
+    ##            died euthanized lived class.error
+    ## died         46          2    29   0.4025974
+    ## euthanized    5         11    28   0.7500000
+    ## lived        13          7   158   0.1123596

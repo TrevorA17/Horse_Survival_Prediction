@@ -382,3 +382,66 @@ cat("Bootstrap Standard Error:", bootstrap_standard_error, "\n")
 
 ```
 
+# Train Models
+## Logistic Regression Model
+```{r Logistic Regression Model}
+# Remove rows with missing values
+horse_data <- na.omit(horse_data)
+
+# Train a logistic regression model for classification
+model <- glm(outcome ~ ., data = horse_data, family = binomial)
+
+# Print the summary of the model
+summary(model)
+
+# Ensure peripheral_pulse has the same factor levels in horse_data as in the model
+horse_data$peripheral_pulse <- factor(horse_data$peripheral_pulse, levels = levels(train_data$peripheral_pulse))
+
+# Predict outcomes using the logistic regression model
+predictions <- predict(model, newdata = horse_data, type = "response")
+
+# Convert predicted probabilities to binary predictions (0 or 1)
+predicted_classes <- ifelse(predictions > 0.5, 1, 0)
+
+# Create a confusion matrix
+conf_matrix <- table(horse_data$outcome, predicted_classes)
+print("Confusion Matrix:")
+print(conf_matrix)
+
+# Calculate accuracy
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+print(paste("Accuracy:", accuracy))
+
+# Calculate precision
+precision <- conf_matrix[2, 2] / sum(conf_matrix[, 2])
+print(paste("Precision:", precision))
+
+# Calculate recall (sensitivity)
+recall <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+print(paste("Recall (Sensitivity):", recall))
+
+# Calculate specificity
+specificity <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+print(paste("Specificity:", specificity))
+
+# Calculate F1 score
+f1_score <- 2 * (precision * recall) / (precision + recall)
+print(paste("F1 Score:", f1_score))
+
+# Plot ROC curve
+library(pROC)
+roc_curve <- roc(horse_data$outcome, predictions)
+plot(roc_curve, main = "ROC Curve", col = "blue")
+```
+
+## Random Forest Model
+```{r RF model}
+# Train a random forest model
+library(randomForest)
+rf_model <- randomForest(outcome ~ ., data = horse_data)
+
+# Print the summary of the random forest model
+print(rf_model)
+
+```
+

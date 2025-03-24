@@ -81,11 +81,17 @@ bootstrap_standard_error <- sd(bootstrap_statistics)
 cat("Bootstrap Estimate:", bootstrap_estimate, "\n")
 cat("Bootstrap Standard Error:", bootstrap_standard_error, "\n")
 
+# Remove rows with missing values
+horse_data <- na.omit(horse_data)
+
 # Train a logistic regression model for classification
 model <- glm(outcome ~ ., data = horse_data, family = binomial)
 
 # Print the summary of the model
 summary(model)
+
+# Ensure peripheral_pulse has the same factor levels in horse_data as in the model
+horse_data$peripheral_pulse <- factor(horse_data$peripheral_pulse, levels = levels(train_data$peripheral_pulse))
 
 # Predict outcomes using the logistic regression model
 predictions <- predict(model, newdata = horse_data, type = "response")
@@ -132,41 +138,29 @@ rf_model <- randomForest(outcome ~ ., data = horse_data)
 print(rf_model)
 
 library(caret)
+library(randomForest)
 
-# Define the control parameters for cross-validation
-ctrl <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+# Ensure outcome is a factor
+horse_data$outcome <- as.factor(horse_data$outcome)
 
-# Define the classification models to compare
-models <- c("Logistic Regression" = "glm",
-            "Random Forest" = "rf")
-
-# Check for missing values in the dataset
-missing_values <- colSums(is.na(horse_data))
-print(missing_values)
-
-# Remove rows with missing values
+# Remove missing values
 horse_data <- na.omit(horse_data)
 
+# Convert categorical variables to factors
+horse_data[] <- lapply(horse_data, function(x) if (is.character(x)) as.factor(x) else x)
 
-# Train and evaluate models using cross-validation
+# Define train control
+ctrl <- trainControl(method = "cv", number = 10)
+
+# Define models as a list
+models <- list("Logistic Regression" = "glm",
+               "Random Forest" = "rf")
+
+# Train models
 results <- lapply(models, function(model) {
   train(outcome ~ ., data = horse_data, method = model, trControl = ctrl)
 })
 
 # Compare model performance
 comparison <- resamples(results)
-
-# Summarize model performance
 summary(comparison)
-
-
-
-
-
-
-
-
-
-
-
-
