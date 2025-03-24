@@ -1,5 +1,55 @@
+---
+title: "Horse Survival Prediction"
+author: "Trevor Okinda"
+date: "2024"
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_height: 4
+    df_print: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Student Details
+
+|                                              |     |
+|----------------------------------------------|-----|
+| **Student ID Number**                        | 134780 |
+| **Student Name**                             | Trevor Okinda |
+| **BBIT 4.2 Group**                           | C |
+| **Project Name**                             | Horse Survival Prediction|
+
+# Setup Chunk
+
+**Note:** the following KnitR options have been set as the global defaults: <BR> `knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy = TRUE)`.
+
+More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+
+```{r setup, include=FALSE}
+library(formatR)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  collapse = FALSE
+)
+```
+
+### Source: 
+
+The dataset that was used can be downloaded here: *\<https://www.kaggle.com/datasets/yasserh/horse-survival-dataset\>*
+
+### Reference:
+
+*\<Yasser, M. H. (n.d.). Horse Survival Dataset. Retrieved from https://www.kaggle.com/datasets/yasserh/horse-survival-dataset\>\
+Refer to the APA 7th edition manual for rules on how to cite datasets: <https://apastyle.apa.org/style-grammar-guidelines/references/examples/data-set-references>*
+
+# Exploratory Data Analysis
+## Load dataset
+```{r load dataset}
 # Load dataset
-horse_data <- read.csv("data/horse.csv", colClasses = c(
+horse_data <- read.csv("horse.csv", colClasses = c(
   surgery = "factor",
   age = "factor",
   hospital_number = "integer",
@@ -38,7 +88,10 @@ head(horse_data)
 
 # View the dataset in a separate viewer window
 View(horse_data)
+```
 
+## Measures of Frequency
+```{r MOF}
 # Measures of Frequency
 # Frequency table for categorical variables
 cat_vars <- c("surgery", "age", "temp_of_extremities", "peripheral_pulse", 
@@ -61,7 +114,10 @@ num_freq_summary <- lapply(horse_data[num_vars], summary)
 # Print frequency tables
 cat_freq_summary
 num_freq_summary
+```
 
+## Measures of Central Tendency
+```{r MOCT}
 # Measures of Central Tendency for Numerical Variables
 num_vars <- c("rectal_temp", "pulse", "respiratory_rate", 
               "nasogastric_reflux_ph", "packed_cell_volume", "total_protein", 
@@ -83,7 +139,10 @@ num_modes <- sapply(horse_data[num_vars], get_mode)
 # Print measures of central tendency for numerical variables
 num_central_tendency <- data.frame(mean = num_means, median = num_medians, mode = num_modes)
 num_central_tendency
+```
 
+## Measures of Relationship
+```{r MOR}
 # Measures of Relationship
 
 # Correlation analysis for numerical variables
@@ -110,7 +169,10 @@ cat_contingency_tables <- lapply(horse_data[cat_vars], table)
 
 # Print contingency tables
 cat_contingency_tables
+```
 
+## ANOVA
+```{r ANOVA}
 # ANOVA (Analysis of Variance)
 
 # Example: ANOVA for the 'age' variable (categorical) and the 'pulse' variable (numerical)
@@ -118,7 +180,10 @@ anova_result <- aov(pulse ~ age, data = horse_data)
 
 # Print ANOVA table
 summary(anova_result)
+```
 
+## Plots
+```{r Plots}
 library(ggplot2)
 
 # Numerical Variables
@@ -230,4 +295,90 @@ print(scatter_plots[[3]])  # Print first scatter plot
 print(boxplots_by_cat[[1]][[1]])  # Print first boxplot by the first categorical variable
 
 
+```
+
+# Preprocessing and Data Transformation
+## Missing Values
+```{r Missing Values}
+# Summarize missing values for each variable
+missing_values_summary <- sapply(horse_data, function(x) sum(is.na(x) | is.null(x)))
+print("Summary of Missing Values:")
+print(missing_values_summary)
+```
+
+## Imputation
+```{r Imputation}
+# Impute missing values 
+# Mean imputation for numerical variables
+for (var in num_vars) {
+  if (sum(is.na(horse_data[[var]])) > 0) {
+    horse_data[[var]][is.na(horse_data[[var]])] <- mean(horse_data[[var]], na.rm = TRUE)
+  }
+}
+
+# Mode imputation for categorical variables
+for (var in cat_vars) {
+  if (sum(is.na(horse_data[[var]])) > 0) {
+    mode_val <- names(sort(table(horse_data[[var]], useNA = "always"), decreasing = TRUE)[1])
+    horse_data[[var]][is.na(horse_data[[var]])] <- mode_val
+  }
+}
+
+# Verify if missing values are imputed
+missing_values_after_imputation <- colSums(is.na(horse_data))
+print(missing_values_after_imputation)
+
+# View the imputed dataset
+print(horse_data)  # Print the entire dataset
+```
+
+# Training Model
+## Data Splitting
+```{r Data Splitting}
+library(caret)
+
+# Set the seed for reproducibility
+set.seed(123)
+
+# Define the percentage of data to be used for training (e.g., 80%)
+train_percentage <- 0.8
+
+# Split the dataset into training and testing sets
+train_index <- createDataPartition(horse_data$outcome, p = train_percentage, list = FALSE)
+train_data <- horse_data[train_index, ]
+test_data <- horse_data[-train_index, ]
+
+# Print the dimensions of the training and testing sets
+cat("Training set dimensions:", dim(train_data), "\n")
+cat("Testing set dimensions:", dim(test_data), "\n")
+```
+
+## Boostrapping
+```{r Boostrapping}
+# Set the seed for reproducibility
+set.seed(123)
+
+# Define the number of bootstrap samples
+num_bootstrap_samples <- 1000
+
+# Initialize an empty vector to store bootstrap statistics
+bootstrap_statistics <- numeric(num_bootstrap_samples)
+
+# Perform bootstrapping
+for (i in 1:num_bootstrap_samples) {
+  # Generate a bootstrap sample by sampling with replacement
+  bootstrap_sample <- horse_data[sample(nrow(horse_data), replace = TRUE), ]
+  
+  # Compute the statistic of interest on the bootstrap sample
+  # For example, you can compute the mean of a numerical variable
+  bootstrap_statistics[i] <- mean(bootstrap_sample$rectal_temp, na.rm = TRUE)
+}
+
+# Compute and print the bootstrap estimate (e.g., mean) and its standard error
+bootstrap_estimate <- mean(bootstrap_statistics)
+bootstrap_standard_error <- sd(bootstrap_statistics)
+cat("Bootstrap Estimate:", bootstrap_estimate, "\n")
+cat("Bootstrap Standard Error:", bootstrap_standard_error, "\n")
+
+```
 
